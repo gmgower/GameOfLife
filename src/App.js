@@ -1,24 +1,46 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+// import Board from './components/board.js';
+
+const numRows = 25;
+const numCols = 25;
 
 function App() {
+  const [grid, setGrid] = useState(() => {
+    const rows = [];
+    for (let i = 0; i < numRows; i++) {
+      rows.push(Array.from(Array(numCols), () => 0));
+    }
+    return rows;
+  });
+
+  console.log(grid);
+
+  // Grid to display cell
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div className='App'>
+      <header>Game of Life</header>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${numCols}, 20px)`
+        }}
         >
-          Learn React
-        </a>
-      </header>
+        {grid.map((rows, i) =>
+          rows.map((col, k) => (
+            <div
+              key={`${i}-${k}`}
+              style={{
+                width: 20,
+                height: 20,
+                backgroundColor: grid[i][k] ? 'red' : undefined,
+                border: 'solid 1px black'
+              }}
+            ></div>
+          ))
+        )}
+        {/* <Board /> */}
+      </div>
     </div>
   );
 }
