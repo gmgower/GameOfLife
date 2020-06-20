@@ -9,6 +9,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 
+
 // S2 wrap povider component around <App />
 ReactDOM.render(
   // s6 add store to Provider
