@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+// s7 import connect
+import {connect} from 'react-redux';
 import './App.css';
 // import Board from './components/board.js';
 
@@ -45,4 +47,15 @@ function App() {
   );
 }
 
-export default App;
+//s11 define mapSTP
+const mapStateToProps = (state) => ({
+  
+})
+
+//s12 define mapDTP
+const mapDispatchToProps = (dispatch) => ({
+
+});
+
+// s8 wrap app component with connect inside second call from 1st call. Pass mapSTP and mapDTP
+export default connect(mapStateToProps, mapDispatchToProps)(App);
