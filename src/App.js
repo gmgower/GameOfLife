@@ -2,17 +2,16 @@ import React from 'react';
 // s7 import connect
 import {connect} from 'react-redux';
 import './App.css';
-import Row from './components/Row/Row';
+import World from './components/World/World';
 
 
 function App() {
-
 
   // Grid to display cell
   return (
     <div className='App'>
       <header>Game of Life</header>
-        <Row />
+        <World />
       <div className='controls'>
         <button></button>
         <label htmlFor="">

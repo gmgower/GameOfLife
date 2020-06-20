@@ -1,0 +1,4 @@
+.World {
+    display: flex;
+    flex-direction: column;
+}
