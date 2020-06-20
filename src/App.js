@@ -2,7 +2,7 @@ import React from 'react';
 // s7 import connect
 import {connect} from 'react-redux';
 import './App.css';
-import Cell from './components/Cell'
+import Row from './components/Row/Row';
 
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
   return (
     <div className='App'>
       <header>Game of Life</header>
-        <Cell />
+        <Row />
       <div className='controls'>
         <button></button>
         <label htmlFor="">
