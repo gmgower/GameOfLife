@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 // s7 import connect
 import {connect} from 'react-redux';
 import './App.css';
-// import Board from './components/board.js';
+import Cell from './components/Cell'
 
 
 function App() {
@@ -12,6 +12,7 @@ function App() {
   return (
     <div className='App'>
       <header>Game of Life</header>
+        <Cell />
       <div className='controls'>
         <button></button>
         <label htmlFor="">
@@ -23,7 +24,7 @@ function App() {
         <button>Randomize</button>
         <button>Clear</button>
       </div>
-      <div className>
+      <div className='statusbar'>
         <span>Generation: </span>
         <span>Population: </span>
       </div>
