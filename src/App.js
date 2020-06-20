@@ -4,44 +4,28 @@ import {connect} from 'react-redux';
 import './App.css';
 // import Board from './components/board.js';
 
-const numRows = 25;
-const numCols = 25;
 
 function App() {
-  const [grid, setGrid] = useState(() => {
-    const rows = [];
-    for (let i = 0; i < numRows; i++) {
-      rows.push(Array.from(Array(numCols), () => 0));
-    }
-    return rows;
-  });
 
-  console.log(grid);
 
   // Grid to display cell
   return (
     <div className='App'>
       <header>Game of Life</header>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${numCols}, 20px)`
-        }}
-        >
-        {grid.map((rows, i) =>
-          rows.map((col, k) => (
-            <div
-              key={`${i}-${k}`}
-              style={{
-                width: 20,
-                height: 20,
-                backgroundColor: grid[i][k] ? 'red' : undefined,
-                border: 'solid 1px black'
-              }}
-            ></div>
-          ))
-        )}
-        {/* <Board /> */}
+      <div className='controls'>
+        <button></button>
+        <label htmlFor="">
+          Tick Duration:{' '}
+        </label>
+        <button>Tick</button>
+      </div>
+      <div className='controls'>
+        <button>Randomize</button>
+        <button>Clear</button>
+      </div>
+      <div className>
+        <span>Generation: </span>
+        <span>Population: </span>
       </div>
     </div>
   );
