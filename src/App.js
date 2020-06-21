@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import './App.css';
 import World from './components/World/World';
 // import Game from './gameOfLife';
-import { randomize, clear } from './actions/index';
+import { randomize, clear, togglePaused } from './actions/index';
 
 class App extends React.Component {
   constructor(props) {
@@ -17,7 +17,9 @@ class App extends React.Component {
       <div className='App'>
         <header>Game of Life</header>
         <div className='controls'>
-          <button></button>
+          <button onClick={this.props.togglePaused}>
+            {this.props.paused ? 'Resume' : 'Pause'}
+          </button>
           <label htmlFor=''>Tick Duration: </label>
           <button>Tick</button>
         </div>
@@ -38,12 +40,14 @@ class App extends React.Component {
 //s11 define mapSTP
 const mapStateToProps = (state) => ({
   world: state.world,
+  paused: state.paused
 });
 
 //s12 define mapDTP
 const mapDispatchToProps = (dispatch) => ({
   randomize: () => dispatch(randomize()),
-  clear: () => dispatch(clear())
+  clear: () => dispatch(clear()),
+  togglePaused: () => dispatch(togglePaused())
 });
 
 // s8 wrap app component with connect inside second call from 1st call. Pass mapSTP and mapDTP
