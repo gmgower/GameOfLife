@@ -14,6 +14,18 @@ const newRandomWorld = (width, height, density = .1) => {
     return world;
 }
 
-export default {
-    newRandomWorld,  
+const newEmptyWorld = (width, height) => {
+    let world = [];
+    for (let row = 0; row < height; row++) {
+        world[row] = [];
+        for (let col = 0; col < width; col++) {
+            world[row].push(false);
+        }
+    }
+    return world;
 }
+
+export default {
+  newRandomWorld,
+  newEmptyWorld
+};

@@ -1,5 +1,6 @@
 import {
     RANDOMIZE,
+    CLEAR
 } from '../actions/index'
 
 import Game from '../gameOfLife';
@@ -21,7 +22,12 @@ const rootReducer = (state = initialState, action) => {
         return {
             ...state,
             world: Game.newRandomWorld(WORLD_WIDTH, WORLD_HEIGHT),
-        }
+        };
+    if (action.type === CLEAR)
+        return {
+            ...state,
+            world: Game.newEmptyWorld(WORLD_WIDTH, WORLD_HEIGHT),
+        };
 
     return state
 }
