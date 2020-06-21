@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import './App.css';
 import World from './components/World/World';
 // import Game from './gameOfLife';
+import { randomize } from './actions/index';
 
 class App extends React.Component {
   constructor(props) {
@@ -21,7 +22,7 @@ class App extends React.Component {
           <button>Tick</button>
         </div>
         <div className='controls'>
-          <button>Randomize</button>
+          <button onClick={this.props.randomize}>Randomize</button>
           <button>Clear</button>
         </div>
         <World></World>
@@ -40,7 +41,9 @@ const mapStateToProps = (state) => ({
 });
 
 //s12 define mapDTP
-const mapDispatchToProps = (dispatch) => ({});
+const mapDispatchToProps = (dispatch) => ({
+  randomize: () => dispatch(randomize()),
+});
 
 // s8 wrap app component with connect inside second call from 1st call. Pass mapSTP and mapDTP
 export default connect(mapStateToProps, mapDispatchToProps)(App);
