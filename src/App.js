@@ -4,12 +4,21 @@ import { connect } from 'react-redux';
 import './App.css';
 import World from './components/World/World';
 // import Game from './gameOfLife';
-import { randomize, clear, togglePaused } from './actions/index';
+import { randomize, clear, togglePaused, setTickDuration, tick } from './actions/index';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+
+    this.handleTickDurationInputChange = this.handleTickDurationInputChange.bind(
+      this
+    );    
   }
+
+  handleTickDurationInputChange = (event) => {
+    let newTickDuration = Number(event.target.value);
+    this.props.setTickDuration(newTickDuration);
+  };
 
   render = () => {
     // Grid to display cell
@@ -20,8 +29,18 @@ class App extends React.Component {
           <button onClick={this.props.togglePaused}>
             {this.props.paused ? 'Resume' : 'Pause'}
           </button>
-          <label htmlFor=''>Tick Duration: </label>
-          <button>Tick</button>
+          <label>Tick Duration: {' '}
+            <input
+              type='number'
+              step='100'
+              min='100'
+              value={this.props.tickDuration}
+              onChange={this.handleTickDurationInputChange}
+            >
+            </input>
+
+          </label>
+          <button onClick={this.props.tick(true)}>Tick</button>
         </div>
         <div className='controls'>
           <button onClick={this.props.randomize}>Randomize</button>
@@ -40,14 +59,17 @@ class App extends React.Component {
 //s11 define mapSTP
 const mapStateToProps = (state) => ({
   world: state.world,
-  paused: state.paused
+  paused: state.paused,
+  tickDuration: state.tickDuration
 });
 
 //s12 define mapDTP
 const mapDispatchToProps = (dispatch) => ({
   randomize: () => dispatch(randomize()),
   clear: () => dispatch(clear()),
-  togglePaused: () => dispatch(togglePaused())
+  togglePaused: () => dispatch(togglePaused()),
+  setTickDuration: (tickDuration) => dispatch(setTickDuration(tickDuration)),
+  tick: (manual) => () => dispatch(tick(manual))
 });
 
 // s8 wrap app component with connect inside second call from 1st call. Pass mapSTP and mapDTP
