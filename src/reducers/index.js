@@ -1,12 +1,12 @@
-import { RANDOMIZE, CLEAR, TOGGLE_PAUSED, SET_TICK_DURATION, TICK } from '../actions/index';
+import { RANDOMIZE, CLEAR, TOGGLE_PAUSED, SET_TICK_DURATION, TICK, TOGGLE_CELL } from '../actions/index';
 
 import Game from '../gameOfLife';
 import store from '../store/index';
 import {tick} from '../actions/index';
 
 // World Grid
-const WORLD_WIDTH = 64;
-const WORLD_HEIGHT = 40;
+const WORLD_WIDTH = 25;
+const WORLD_HEIGHT = 25;
 
 // s3 build initialState
 const initialState = {
@@ -56,6 +56,16 @@ const rootReducer = (state = initialState, action) => {
       return state;
     }
   }
+
+  if (action.type === TOGGLE_CELL)
+    return {
+      ...state,
+      world: Game.toggleCell(
+        state.world,
+        action.payload.row,
+        action.payload.col
+      ),
+    };
   return state;
 };
 

@@ -16,3 +16,9 @@ export const setTickDuration = (tickDuration) => ({
 
 export const TICK = 'TICK';
 export const tick = (manual = false) => ({ type: TICK, payload: { manual } });
+
+export const TOGGLE_CELL = 'TOGGLE_CELL';
+export const toggleCell = (row, col) => ({
+  type: TOGGLE_CELL,
+  payload: {row, col}
+});

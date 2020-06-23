@@ -30,6 +30,16 @@ const getCell = (world, row, col) => {
     else return world[row][col]; 
 }
 
+const setCell = (world, row, col, alive = true) => {
+  let newWorld = world.map((row) => row.slice());
+  newWorld[row][col] = alive;
+  return newWorld;
+}
+
+const toggleCell = (world, row, col) =>{
+  return setCell(world, row, col, !getCell(world, row, col));
+}
+
 const getNeighbors = (world, row, col) => {
     return [
         getCell(world, row - 1, col),
@@ -82,5 +92,7 @@ export default {
   tickCell,
   countAliveNeighbors,
   getNeighbors,
-  getCell
+  getCell,
+  setCell,
+  toggleCell
 };
