@@ -1,8 +1,15 @@
-import { RANDOMIZE, CLEAR, TOGGLE_PAUSED, SET_TICK_DURATION, TICK, TOGGLE_CELL } from '../actions/index';
+import {
+  RANDOMIZE,
+  CLEAR,
+  TOGGLE_PAUSED,
+  SET_TICK_DURATION,
+  TICK,
+  TOGGLE_CELL,
+} from '../actions/index';
 
 import Game from '../gameOfLife';
 import store from '../store/index';
-import {tick} from '../actions/index';
+import { tick } from '../actions/index';
 
 // World Grid
 const WORLD_WIDTH = 25;
@@ -13,6 +20,7 @@ const initialState = {
   world: Game.newRandomWorld(WORLD_WIDTH, WORLD_HEIGHT),
   paused: false,
   tickDuration: 500,
+  generation: 0,
 };
 
 initialState.tickInterval = setInterval(
@@ -26,32 +34,35 @@ const rootReducer = (state = initialState, action) => {
     return {
       ...state,
       world: Game.newRandomWorld(WORLD_WIDTH, WORLD_HEIGHT),
+      generation: 0
     };
   if (action.type === CLEAR)
     return {
       ...state,
       world: Game.newEmptyWorld(WORLD_WIDTH, WORLD_HEIGHT),
+      generation: 0
     };
   if (action.type === TOGGLE_PAUSED)
     return {
       ...state,
       paused: !state.paused,
     };
-  if (action.type === SET_TICK_DURATION){
-    clearInterval(state.tickInterval)
+  if (action.type === SET_TICK_DURATION) {
+    clearInterval(state.tickInterval);
     return {
-      ...state, 
+      ...state,
       tickDuration: action.payload,
-      tickInterval: setInterval(() => store.dispatch(tick()), action.payload), 
+      tickInterval: setInterval(() => store.dispatch(tick()), action.payload),
     };
   }
 
   if (action.type === TICK) {
-    if (!state.paused || action.payload.manual){
+    if (!state.paused || action.payload.manual) {
       return {
         ...state,
         world: Game.tick(state.world),
-     };
+        generation: state.generation + 1,
+      };
     } else {
       return state;
     }

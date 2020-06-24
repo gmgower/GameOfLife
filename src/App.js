@@ -48,7 +48,7 @@ class App extends React.Component {
         </div>
         <World></World>
         <div className='statusbar'>
-          <span>Generation: </span>
+          <span>Generation: {this.props.generation}</span>
           <span>Population: </span>
         </div>
       </div>
@@ -60,7 +60,8 @@ class App extends React.Component {
 const mapStateToProps = (state) => ({
   world: state.world,
   paused: state.paused,
-  tickDuration: state.tickDuration
+  tickDuration: state.tickDuration,
+  generation: state.generation
 });
 
 //s12 define mapDTP
