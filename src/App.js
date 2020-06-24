@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import './App.css';
 import World from './components/World/World';
-// import Game from './gameOfLife';
+import Game from './gameOfLife';
 import { randomize, clear, togglePaused, setTickDuration, tick } from './actions/index';
 
 class App extends React.Component {
@@ -49,7 +49,7 @@ class App extends React.Component {
         <World></World>
         <div className='statusbar'>
           <span>Generation: {this.props.generation}</span>
-          <span>Population: </span>
+          <span>Population: {Game.getPopulation(this.props.world)}</span>
         </div>
       </div>
     );

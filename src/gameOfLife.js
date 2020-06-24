@@ -25,37 +25,37 @@ const newEmptyWorld = (width, height) => {
 };
 
 const getCell = (world, row, col) => {
-    if (row < 0 || col < 0 || row >= world.length || col >= world[row].length)
-        return undefined;
-    else return world[row][col]; 
-}
+  if (row < 0 || col < 0 || row >= world.length || col >= world[row].length)
+    return undefined;
+  else return world[row][col];
+};
 
 const setCell = (world, row, col, alive = true) => {
   let newWorld = world.map((row) => row.slice());
   newWorld[row][col] = alive;
   return newWorld;
-}
+};
 
-const toggleCell = (world, row, col) =>{
+const toggleCell = (world, row, col) => {
   return setCell(world, row, col, !getCell(world, row, col));
-}
+};
 
 const getNeighbors = (world, row, col) => {
-    return [
-        getCell(world, row - 1, col),
-        getCell(world, row - 1, col + 1),
-        getCell(world, row, col + 1),
-        getCell(world, row + 1, col + 1),
-        getCell(world, row + 1, col),
-        getCell(world, row + 1, col - 1),
-        getCell(world, row, col - 1),
-        getCell(world, row - 1, col - 1),
-    ];
+  return [
+    getCell(world, row - 1, col),
+    getCell(world, row - 1, col + 1),
+    getCell(world, row, col + 1),
+    getCell(world, row + 1, col + 1),
+    getCell(world, row + 1, col),
+    getCell(world, row + 1, col - 1),
+    getCell(world, row, col - 1),
+    getCell(world, row - 1, col - 1),
+  ];
 };
 
 const countAliveNeighbors = (world, row, col) => {
-    return getNeighbors(world, row, col).filter((cell) => cell === true).length
-}
+  return getNeighbors(world, row, col).filter((cell) => cell === true).length;
+};
 
 const tickCell = (world, row, col) => {
   let alive = getCell(world, row, col);
@@ -85,6 +85,12 @@ const tick = (world) => {
   return nextGeneration;
 };
 
+const getPopulation = (world) => {
+  return world
+    .map((row) => Number(row.filter((alive) => alive).length))
+    .reduce((aliveOverall, aliveInRow) => aliveOverall + aliveInRow, 0);
+};
+
 export default {
   newRandomWorld,
   newEmptyWorld,
@@ -94,5 +100,6 @@ export default {
   getNeighbors,
   getCell,
   setCell,
-  toggleCell
+  toggleCell,
+  getPopulation,
 };
