@@ -58,6 +58,12 @@ class App extends React.Component {
 
   };
 
+  handleClearWorld = () => {
+    this.setState({
+      worldStatus: newWorldStatus(() => false)
+    })
+  }
+
   render = () => {
     const { worldStatus } = this.state;
 
@@ -75,7 +81,7 @@ class App extends React.Component {
               <button type='button'>Start</button>
               <button type='button'>Stop</button>
               <button>Next</button>
-              <button type='button'>Clear</button>
+              <button type='button' onClick={this.handleClearWorld}>Clear</button>
               <button type='button'>Reset</button>
             </div>
             <div className='World'>
