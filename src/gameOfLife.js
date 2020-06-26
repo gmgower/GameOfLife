@@ -1,5 +1,5 @@
 // Create new random world
-const newRandomWorld = (width, height, density = 0.1) => {
+const newRandomWorld = (width, height, density = 0.2) => {
   // debugger;
   let world = [];
   // create row on index

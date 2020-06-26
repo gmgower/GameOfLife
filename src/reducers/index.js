@@ -36,17 +36,21 @@ const rootReducer = (state = initialState, action) => {
       world: Game.newRandomWorld(WORLD_WIDTH, WORLD_HEIGHT),
       generation: 0
     };
+
   if (action.type === CLEAR)
     return {
       ...state,
       world: Game.newEmptyWorld(WORLD_WIDTH, WORLD_HEIGHT),
-      generation: 0
+      generation: 0,
+      paused: true
     };
+
   if (action.type === TOGGLE_PAUSED)
     return {
       ...state,
       paused: !state.paused,
     };
+
   if (action.type === SET_TICK_DURATION) {
     clearInterval(state.tickInterval);
     return {
