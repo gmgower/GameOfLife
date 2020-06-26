@@ -58,9 +58,17 @@ class App extends React.Component {
 
   };
 
+  // Clears the board, sets the state for all cells to false
   handleClearWorld = () => {
     this.setState({
       worldStatus: newWorldStatus(() => false)
+    })
+  }
+
+  // clears the board and the status of each cell to a random boolean value by default 
+  handleNewWorld = () => {
+    this.setState({
+      worldStatus: newWorldStatus()
     })
   }
 
@@ -82,7 +90,7 @@ class App extends React.Component {
               <button type='button'>Stop</button>
               <button>Next</button>
               <button type='button' onClick={this.handleClearWorld}>Clear</button>
-              <button type='button'>Reset</button>
+              <button type='button' onClick={this.handleNewWorld}>Reset</button>
             </div>
             <div className='World'>
               <h3>Generation: 0</h3>
