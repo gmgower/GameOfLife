@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 
-// Size of board
+// Size of world
 const totalWorldRows = 25;
 const totalWorldColumns = 25;
 
@@ -20,7 +20,7 @@ const newWorldStatus = (cellStatus = () => Math.random() < 0.4) => {
   return grid;
 };
 
-// Func that receives that state of the whole board status and toggle method
+// Func that receives that state of the whole world status and toggle method
 const WorldGrid = ({ worldStatus, onToggleCell }) => {
   // Method that allows users to toggle the status of individual cells as props
   const handleClick = (row, column) => onToggleCell(row, column);
@@ -34,7 +34,7 @@ const WorldGrid = ({ worldStatus, onToggleCell }) => {
       td.push(
         <td
           key={`${row}, ${column}`}
-          // className attr whose value is dependent on the boolean value of the corresponding board cell
+          // className attr whose value is dependent on the boolean value of the corresponding world cell
           className={worldStatus[row][column] ? 'alive' : 'dead'}
           onClick={() => handleClick(row, column)}
         />
@@ -69,7 +69,7 @@ const Slider = ({ speed, onSpeedChange }) => {
 
 class App extends React.Component {
   state = {
-    // When game starts, the world's cells status will be return by the func that generates a new board status
+    // When game starts, the world's cells status will be return by the func that generates a new world status
     worldStatus: newWorldStatus(),
     // World runs
     isWorldRunning: false,
@@ -77,14 +77,14 @@ class App extends React.Component {
     speed: 300,
   };
 
-  // Clears the board, sets the state for all cells to false
+  // Clears the world, sets the state for all cells to false
   handleClearWorld = () => {
     this.setState({
       worldStatus: newWorldStatus(() => false),
     });
   };
 
-  // clears the board and the status of each cell to a random boolean value by default
+  // clears the world and the status of each cell to a random boolean value by default
   handleNewWorld = () => {
     this.setState({
       worldStatus: newWorldStatus(),
@@ -107,7 +107,7 @@ class App extends React.Component {
   };
 
   // Handles the games progress, gets called on when making the next move
-   handleStep = () => {
+  handleStep = () => {
     const nextStep = (prevState) => {
       const worldStatus = prevState.worldStatus;
       const clonedWorldStatus = JSON.parse(JSON.stringify(worldStatus));
@@ -128,11 +128,11 @@ class App extends React.Component {
         return neighbors.reduce((trueNeighbors, neighbor) => {
           const x = row + neighbor[0];
           const y = column + neighbor[1];
-          // Calculates the amount of neighbors within the board with value true for an individual cell
-          const isNeighborOnBoard =
+          // Calculates the amount of neighbors within the world with value true for an individual cell
+          const isNeighborOnWorld =
             x >= 0 && x < totalWorldRows && y >= 0 && y < totalWorldColumns;
           // No need to count more than 4 alive neighbors
-          if (trueNeighbors < 4 && isNeighborOnBoard && worldStatus[x][y]) {
+          if (trueNeighbors < 4 && isNeighborOnWorld && worldStatus[x][y]) {
             return trueNeighbors + 1;
           } else {
             return trueNeighbors;
@@ -140,7 +140,7 @@ class App extends React.Component {
         }, 0);
       };
 
-      // Updates the cloned board’s individual cell status and returns the cloned board status
+      // Updates the cloned world’s individual cell status and returns the cloned world status
       for (let row = 0; row < totalWorldRows; row++) {
         for (let column = 0; column < totalWorldColumns; column++) {
           const totalTrueNeighbors = amountTrueNeighbors(row, column);
@@ -156,11 +156,29 @@ class App extends React.Component {
       return clonedWorldStatus;
     };
 
-    
-    // Sets the updated cloned board status to state
+    // Sets the updated cloned world status to state
     this.setState((prevState) => ({
       worldStatus: nextStep(prevState),
+    }));
+  };
 
+  // Method to handle player requests to toggle individual cell status
+  handleToggleCell = (row, column) => {
+    // Sets the states of the world status by calling a function and passing it the previous state as argument
+    const toggleWorld = (prevState) => {
+      // Deep clones the previous world’s status to avoid modifying it by reference when updating an individual cell
+      const clonedWorldStatus = JSON.parse(
+        JSON.stringify(prevState.worldStatus)
+      );
+      // Updates an individual cell
+      clonedWorldStatus[row][column] = !clonedWorldStatus[row][column];
+      // returns the updated cloned world status, effectively updating the status of the world
+      return clonedWorldStatus;
+    };
+
+    // Calls toggleWorld
+    this.setState((prevState) => ({
+      worldStatus: toggleWorld(prevState),
     }));
   };
 
@@ -223,7 +241,10 @@ class App extends React.Component {
             </div>
             <div className='World'>
               <h3>Generation: 0</h3>
-              <WorldGrid worldStatus={worldStatus} />
+              <WorldGrid 
+              worldStatus={worldStatus}
+              onToggleCell={this.handleToggleCell} 
+              />
             </div>
           </div>
         </div>
