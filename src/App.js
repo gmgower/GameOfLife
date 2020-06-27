@@ -1,6 +1,4 @@
 import React from 'react';
-// s7 import connect
-import { connect } from 'react-redux';
 import './App.css';
 
 // Size of board
@@ -23,9 +21,9 @@ const newWorldStatus = (cellStatus = () => Math.random() < 0.4) => {
 };
 
 // Func that receives that state of the whole board status and toggle method
-const WorldGrid = ({ worldStatus, onToggleCellStatus }) => {
+const WorldGrid = ({ worldStatus, onToggleCell }) => {
   // Method that allows users to toggle the status of individual cells as props
-  const handleClick = (row, column) => onToggleCellStatus(row, column);
+  const handleClick = (row, column) => onToggleCell(row, column);
 
   // Each cell is represented by a table's <td> tag
   const tr = [];
@@ -51,29 +49,143 @@ const WorldGrid = ({ worldStatus, onToggleCellStatus }) => {
   );
 };
 
+// Function component that creates a slider to change the speed of iterations
+const Slider = ({ speed, onSpeedChange }) => {
+  const handleChange = (e) => onSpeedChange(e.target.value);
+
+  return (
+    <input
+      type='range'
+      min='0'
+      max='1000'
+      step='50'
+      // current speed state
+      value={speed}
+      // method to handle the speed change as props
+      onChange={handleChange}
+    />
+  );
+};
+
 class App extends React.Component {
   state = {
     // When game starts, the world's cells status will be return by the func that generates a new board status
     worldStatus: newWorldStatus(),
-
+    // World runs
+    isWorldRunning: false,
+    // Default Speed
+    speed: 300,
   };
 
   // Clears the board, sets the state for all cells to false
   handleClearWorld = () => {
     this.setState({
-      worldStatus: newWorldStatus(() => false)
-    })
-  }
+      worldStatus: newWorldStatus(() => false),
+    });
+  };
 
-  // clears the board and the status of each cell to a random boolean value by default 
+  // clears the board and the status of each cell to a random boolean value by default
   handleNewWorld = () => {
     this.setState({
-      worldStatus: newWorldStatus()
-    })
+      worldStatus: newWorldStatus(),
+    });
+  };
+
+  // Handles world's speed
+  handleSpeedChange = (newSpeed) => {
+    this.setState({ speed: newSpeed });
+  };
+
+  // Handles starting the game
+  handleStart = () => {
+    this.setState({ isWorldRunning: true });
+  };
+
+  // Handles stopping the game
+  handleStop = () => {
+    this.setState({ isWorldRunning: false });
+  };
+
+  // Handles the games progress, gets called on when making the next move
+   handleStep = () => {
+    const nextStep = (prevState) => {
+      const worldStatus = prevState.worldStatus;
+      const clonedWorldStatus = JSON.parse(JSON.stringify(worldStatus));
+
+      // eight possible neighbors
+      const amountTrueNeighbors = (row, column) => {
+        const neighbors = [
+          [-1, -1],
+          [-1, 0],
+          [-1, 1],
+          [0, 1],
+          [1, 1],
+          [1, 0],
+          [1, -1],
+          [0, -1],
+        ];
+        // reduce neighbors, return new array of neighbors
+        return neighbors.reduce((trueNeighbors, neighbor) => {
+          const x = row + neighbor[0];
+          const y = column + neighbor[1];
+          // Calculates the amount of neighbors within the board with value true for an individual cell
+          const isNeighborOnBoard =
+            x >= 0 && x < totalWorldRows && y >= 0 && y < totalWorldColumns;
+          // No need to count more than 4 alive neighbors
+          if (trueNeighbors < 4 && isNeighborOnBoard && worldStatus[x][y]) {
+            return trueNeighbors + 1;
+          } else {
+            return trueNeighbors;
+          }
+        }, 0);
+      };
+
+      // Updates the cloned board’s individual cell status and returns the cloned board status
+      for (let row = 0; row < totalWorldRows; row++) {
+        for (let column = 0; column < totalWorldColumns; column++) {
+          const totalTrueNeighbors = amountTrueNeighbors(row, column);
+          if (!worldStatus[row][column]) {
+            if (totalTrueNeighbors === 3) clonedWorldStatus[row][column] = true;
+          } else {
+            if (totalTrueNeighbors < 2 || totalTrueNeighbors > 3)
+              clonedWorldStatus[row][column] = false;
+          }
+        }
+      }
+
+      return clonedWorldStatus;
+    };
+
+    
+    // Sets the updated cloned board status to state
+    this.setState((prevState) => ({
+      worldStatus: nextStep(prevState),
+
+    }));
+  };
+
+  // Stop or set a timer depending on different combinations of values
+  componentDidUpdate(prevProps, prevState) {
+    const { isWorldRunning, speed } = this.state;
+    const speedChanged = prevState.speed !== speed;
+    const gameStarted = !prevState.isWorldRunning && isWorldRunning;
+    const gameStopped = prevState.isWorldRunning && !isWorldRunning;
+
+    // Stops or starts timer
+    if ((isWorldRunning && speedChanged) || gameStopped) {
+      clearInterval(this.timerID);
+    }
+
+    // The timer schedules a call to the handleStep method at the specified speed intervals
+    if ((isWorldRunning && speedChanged) || gameStarted) {
+      this.timerID = setInterval(() => {
+        this.handleStep();
+      }, speed);
+    }
   }
 
-  render = () => {
-    const { worldStatus } = this.state;
+  render() {
+    const { worldStatus, isWorldRunning, speed } = this.state;
 
     return (
       <div className='App'>
@@ -81,46 +193,43 @@ class App extends React.Component {
         <div>
           <span className='speedometer'>
             <h3>Game Speed</h3>
+            {'Max '}
+            <Slider speed={speed} onSpeedChange={this.handleSpeedChange} />
+            {'Min '}
           </span>
         </div>
         <div className='container'>
           <div>
             <div>
-              <button type='button'>Start</button>
-              <button type='button'>Stop</button>
-              <button>Next</button>
-              <button type='button' onClick={this.handleClearWorld}>Clear</button>
-              <button type='button' onClick={this.handleNewWorld}>Reset</button>
+              <button type='button' onClick={this.handleStart}>
+                Start
+              </button>
+              <button type='button' onClick={this.handleStop}>
+                Stop
+              </button>
+              <button
+                type='button'
+                disabled={isWorldRunning}
+                onClick={this.handleStep}
+              >
+                Next
+              </button>
+              <button type='button' onClick={this.handleClearWorld}>
+                Clear
+              </button>
+              <button type='button' onClick={this.handleNewWorld}>
+                Reset
+              </button>
             </div>
             <div className='World'>
               <h3>Generation: 0</h3>
-              <WorldGrid  worldStatus={worldStatus}/>
+              <WorldGrid worldStatus={worldStatus} />
             </div>
           </div>
         </div>
       </div>
     );
-  };
+  }
 }
-
-// //s11 define mapSTP
-// const mapStateToProps = (state) => ({
-//   world: state.world,
-//   paused: state.paused,
-//   tickDuration: state.tickDuration,
-//   generation: state.generation,
-// });
-
-// //s12 define mapDTP
-// const mapDispatchToProps = (dispatch) => ({
-//   randomize: () => dispatch(randomize()),
-//   clear: () => dispatch(clear()),
-//   togglePaused: () => dispatch(togglePaused()),
-//   setTickDuration: (tickDuration) => dispatch(setTickDuration(tickDuration)),
-//   tick: (manual) => () => dispatch(tick(manual)),
-// });
-
-// // s8 wrap app component with connect inside second call from 1st call. Pass mapSTP and mapDTP
-// export default connect(mapStateToProps, mapDispatchToProps)(App);
 
 export default App;
