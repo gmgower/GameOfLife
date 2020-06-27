@@ -1,6 +1,6 @@
 body {
   color: black;
-  background-color: #414158;
+  background-color: #808080;
 }
 
 table {
@@ -51,22 +51,22 @@ h2 {
   text-align: center;
 }
 
-.controls {
+/* .controls {
   margin-bottom: 1rem;
   display: flex;
   flex-direction: row;
   justify-content: center;
-}
+} */
 
-.controls *:not(:first-child) {
+/* .controls *:not(:first-child) {
   margin-left: 1rem;
-}
+} */
 
-.controls input {
+/* .controls input {
   width: 40px;
-}
+} */
 
-.World {
+.world {
   display: flex;
   flex-direction: column;
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import './App.css';
 
 // Size of world
@@ -67,7 +67,7 @@ const Slider = ({ speed, onSpeedChange }) => {
   );
 };
 
-class App extends React.Component {
+class App extends Component {
   state = {
     // When game starts, the world's cells status will be return by the func that generates a new world status
     worldStatus: newWorldStatus(),
@@ -75,12 +75,15 @@ class App extends React.Component {
     isWorldRunning: false,
     // Default Speed
     speed: 300,
+    // Generation starts at 0
+    generation: 0
   };
 
   // Clears the world, sets the state for all cells to false
   handleClearWorld = () => {
     this.setState({
       worldStatus: newWorldStatus(() => false),
+      generation: 0
     });
   };
 
@@ -88,6 +91,7 @@ class App extends React.Component {
   handleNewWorld = () => {
     this.setState({
       worldStatus: newWorldStatus(),
+      generation: 0
     });
   };
 
@@ -159,6 +163,8 @@ class App extends React.Component {
     // Sets the updated cloned world status to state
     this.setState((prevState) => ({
       worldStatus: nextStep(prevState),
+      // Adds one to the generation’s state to inform the player how many iterations have been produced so far
+      generation: prevState.generation + 1
     }));
   };
 
@@ -203,11 +209,11 @@ class App extends React.Component {
   }
 
   render() {
-    const { worldStatus, isWorldRunning, speed } = this.state;
+    const { worldStatus, isWorldRunning, speed, generation } = this.state;
 
     return (
       <div className='App'>
-        <h1>Game of Life</h1>
+        <h1>Game of Life</h1>        
         <div>
           <span className='speedometer'>
             <h3>Game Speed</h3>
@@ -240,7 +246,7 @@ class App extends React.Component {
               </button>
             </div>
             <div className='World'>
-              <h3>Generation: 0</h3>
+              <h3>{`Generation: ${generation}`}</h3>
               <WorldGrid 
               worldStatus={worldStatus}
               onToggleCell={this.handleToggleCell} 
