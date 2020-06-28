@@ -173,7 +173,7 @@ class App extends React.Component {
           <details className='info-details'>
             <summary>Rules of Game</summary>
             <div>
-              <p>
+              
                 <p>This is a no player game (NPC). The rules are as follows:</p>
                 <p>
                   <li>
@@ -189,11 +189,11 @@ class App extends React.Component {
                 </p>
                 <a
                   href='https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'
-                  target='_blank'
+                 
                 >
                   Conway's Game of Life (Wikipedia)
                 </a>
-              </p>
+              
             </div>
           </details>
         </div>

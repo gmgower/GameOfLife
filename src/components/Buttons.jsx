@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, DropdownButton, DropdownItem, ButtonToolbar, Dropdown } from 'react-bootstrap';
+import { Button, DropdownButton, ButtonToolbar} from 'react-bootstrap';
 import Item from 'react-bootstrap/DropdownItem';
 
 class Buttons extends React.Component {
@@ -13,12 +13,26 @@ class Buttons extends React.Component {
         <ButtonToolbar>
           <DropdownButton
             title='Grid Size'
-            id='size-menu'
-            onSelect={this.handleSelect}           
+            id='dropdown-basic-button'
+            variant='secondary'
+            onSelect={this.handleSelect}
           >
-            <Dropdown.Item eventKey='1'> 20 x 10 </Dropdown.Item>
-            <Dropdown.Item eventKey='2'> 50 x 50 </Dropdown.Item>
-            <Dropdown.Item eventKey='3'> 70 x 50 </Dropdown.Item>
+            <Item eventKey='1'>
+              <item>
+                <Button>20x10</Button>
+              </item>{' '}
+            </Item>
+            <Item eventKey='2'>
+              {' '}
+              <item>
+                <Button>50x30</Button>
+              </item>{' '}
+            </Item>
+            <Item eventKey='3'>
+              <item>
+                <Button>70x50</Button>
+              </item>
+            </Item>
           </DropdownButton>
 
           <Button
