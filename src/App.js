@@ -1,262 +1,226 @@
-import React, {Component} from 'react';
+import React from 'react';
+import Buttons from './components/Buttons';
+import Grid from './components/Grid';
 import './App.css';
 
-// Size of world
-const totalWorldRows = 25;
-const totalWorldColumns = 25;
+const operations = [
+  [0, 1],
+  [0, -1],
+  [1, -1],
+  [-1, 1],
+  [1, 1],
+  [-1, -1],
+  [1, 0],
+  [-1, 0],
+];
 
-// The function's parameter defaults to less than 40% chance of being alive
-const newWorldStatus = (cellStatus = () => Math.random() < 0.4) => {
-  const grid = [];
-  // The number of arrays within the main array will match the number of rows
-  for (let row = 0; row < totalWorldRows; row++) {
-    grid[row] = [];
-    // the number of values within each of these arrays will match the number of columns
-    for (let column = 0; column < totalWorldColumns; column++) {
-      // Each boolean value will represent that state of each cell: 'alive' or 'dead'
-      grid[row][column] = cellStatus();
-    }
+class App extends React.Component {
+  constructor() {
+    super();
+    this.speed = 100;
+    this.rows = 30;
+    this.cols = 50;
+    //Setting the state which is the inital data it holds , with the first generation begining at zero and the gridFull key is assigned to the value of both
+    // Arrays by first filling the rows with all the elements inside of the array this.cols which will first begin with nothing
+    this.state = {
+      generation: 0,
+      // this is what the full grid is gonna be like we are creating an array that is as big as the rows variable and we are going to fill that with a map where
+      // we are gonna create another array which is as big as the cols variable and each element in that array is false this is ceating a 30 x 50 grid which is
+      // a two dimentional array and every element is set to false every grid cell is turned off to begin with
+      gridFull: Array(this.rows)
+        .fill()
+        .map(() => Array(this.cols).fill(false)),
+    };
   }
-  return grid;
-};
-
-// Func that receives that state of the whole world status and toggle method
-const WorldGrid = ({ worldStatus, onToggleCell }) => {
-  // Method that allows users to toggle the status of individual cells as props
-  const handleClick = (row, column) => onToggleCell(row, column);
-
-  // Each cell is represented by a table's <td> tag
-  const tr = [];
-  for (let row = 0; row < totalWorldRows; row++) {
-    const td = [];
-    for (let column = 0; column < totalWorldColumns; column++) {
-      // Clicking on cell call method being called with the cell's row and column location as arguments
-      td.push(
-        <td
-          key={`${row}, ${column}`}
-          // className attr whose value is dependent on the boolean value of the corresponding world cell
-          className={worldStatus[row][column] ? 'alive' : 'dead'}
-          onClick={() => handleClick(row, column)}
-        />
-      );
-    }
-    tr.push(<tr key={row}>{td}</tr>);
-  }
-  return (
-    <table>
-      <tbody>{tr}</tbody>
-    </table>
-  );
-};
-
-// Function component that creates a slider to change the speed of iterations
-const Slider = ({ speed, onSpeedChange }) => {
-  const handleChange = (e) => onSpeedChange(e.target.value);
-
-  return (
-    <input
-      type='range'
-      min='0'
-      max='1000'
-      step='50'
-      // current speed state
-      value={speed}
-      // method to handle the speed change as props
-      onChange={handleChange}
-    />
-  );
-};
-
-class App extends Component {
-  state = {
-    // When game starts, the world's cells status will be return by the func that generates a new world status
-    worldStatus: newWorldStatus(),
-    // World runs
-    isWorldRunning: false,
-    // Default Speed
-    speed: 300,
-    // Generation starts at 0
-    generation: 0
-  };
-
-  // Clears the world, sets the state for all cells to false
-  handleClearWorld = () => {
+  // when we originally create the 2D array every box is set to false when we use
+  // selectBox we want to change it to true
+  // add the row and col as variables
+  // we begin by making a copy of the array using a helper method arrayClone so as to not update the state directly
+  // find the box that was clicked and change it to the opposite of what it was
+  // then use set state command to update the state
+  selectBox = (row, col) => {
+    let gridCopy = arrayClone(this.state.gridFull);
+    gridCopy[row][col] = !gridCopy[row][col];
     this.setState({
-      worldStatus: newWorldStatus(() => false),
-      generation: 0
+      gridFull: gridCopy,
     });
   };
 
-  // clears the world and the status of each cell to a random boolean value by default
-  handleNewWorld = () => {
-    this.setState({
-      worldStatus: newWorldStatus(),
-      generation: 0
-    });
-  };
-
-  // Handles world's speed
-  handleSpeedChange = (newSpeed) => {
-    this.setState({ speed: newSpeed });
-  };
-
-  // Handles starting the game
-  handleStart = () => {
-    this.setState({ isWorldRunning: true });
-  };
-
-  // Handles stopping the game
-  handleStop = () => {
-    this.setState({ isWorldRunning: false });
-  };
-
-  // Handles the games progress, gets called on when making the next move
-  handleStep = () => {
-    const nextStep = (prevState) => {
-      const worldStatus = prevState.worldStatus;
-      const clonedWorldStatus = JSON.parse(JSON.stringify(worldStatus));
-
-      // eight possible neighbors
-      const amountTrueNeighbors = (row, column) => {
-        const neighbors = [
-          [-1, -1],
-          [-1, 0],
-          [-1, 1],
-          [0, 1],
-          [1, 1],
-          [1, 0],
-          [1, -1],
-          [0, -1],
-        ];
-        // reduce neighbors, return new array of neighbors
-        return neighbors.reduce((trueNeighbors, neighbor) => {
-          const x = row + neighbor[0];
-          const y = column + neighbor[1];
-          // Calculates the amount of neighbors within the world with value true for an individual cell
-          const isNeighborOnWorld =
-            x >= 0 && x < totalWorldRows && y >= 0 && y < totalWorldColumns;
-          // No need to count more than 4 alive neighbors
-          if (trueNeighbors < 4 && isNeighborOnWorld && worldStatus[x][y]) {
-            return trueNeighbors + 1;
-          } else {
-            return trueNeighbors;
-          }
-        }, 0);
-      };
-
-      // Updates the cloned world’s individual cell status and returns the cloned world status
-      for (let row = 0; row < totalWorldRows; row++) {
-        for (let column = 0; column < totalWorldColumns; column++) {
-          const totalTrueNeighbors = amountTrueNeighbors(row, column);
-          if (!worldStatus[row][column]) {
-            if (totalTrueNeighbors === 3) clonedWorldStatus[row][column] = true;
-          } else {
-            if (totalTrueNeighbors < 2 || totalTrueNeighbors > 3)
-              clonedWorldStatus[row][column] = false;
-          }
+  // creating a copy of 2d array , then being iterated  and changing random boxes to true
+  seed = () => {
+    let gridCopy = arrayClone(this.state.gridFull);
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
+        if (Math.floor(Math.random() * 4) === 1) {
+          gridCopy[i][j] = true;
         }
       }
-
-      return clonedWorldStatus;
-    };
-
-    // Sets the updated cloned world status to state
-    this.setState((prevState) => ({
-      worldStatus: nextStep(prevState),
-      // Adds one to the generation’s state to inform the player how many iterations have been produced so far
-      generation: prevState.generation + 1
-    }));
+    }
+    this.setState({
+      gridFull: gridCopy,
+    });
   };
 
-  // Method to handle player requests to toggle individual cell status
-  handleToggleCell = (row, column) => {
-    // Sets the states of the world status by calling a function and passing it the previous state as argument
-    const toggleWorld = (prevState) => {
-      // Deep clones the previous world’s status to avoid modifying it by reference when updating an individual cell
-      const clonedWorldStatus = JSON.parse(
-        JSON.stringify(prevState.worldStatus)
-      );
-      // Updates an individual cell
-      clonedWorldStatus[row][column] = !clonedWorldStatus[row][column];
-      // returns the updated cloned world status, effectively updating the status of the world
-      return clonedWorldStatus;
-    };
-
-    // Calls toggleWorld
-    this.setState((prevState) => ({
-      worldStatus: toggleWorld(prevState),
-    }));
+  playButton = () => {
+    clearInterval(this.intervalId);
+    this.intervalId = setInterval(this.play, this.speed);
+  };
+  pauseButton = () => {
+    clearInterval(this.intervalId);
+  };
+  slow = () => {
+    this.speed = 1000;
+    this.playButton();
+  };
+  
+  medium = () => {
+    this.speed= 400;
+    this.playButton();
+  }
+  fast = () => {
+    this.speed = 100;
+    this.playButton();
   };
 
-  // Stop or set a timer depending on different combinations of values
-  componentDidUpdate(prevProps, prevState) {
-    const { isWorldRunning, speed } = this.state;
-    const speedChanged = prevState.speed !== speed;
-    const gameStarted = !prevState.isWorldRunning && isWorldRunning;
-    const gameStopped = prevState.isWorldRunning && !isWorldRunning;
+  clear = () => {
+    let grid = Array(this.rows)
+      .fill()
+      .map(() => Array(this.cols).fill(false));
+    this.setState({
+      gridFull: grid,
+      generation: 0,
+    });
+  };
+  gridSize = (size) => {
+    switch (size) {
+      case '1':
+        this.cols = 20;
+        this.rows = 10;
+        break;
+      case '2':
+        this.cols = 50;
+        this.rows = 30;
+        break;
+      default:
+        this.cols = 70;
+        this.rows = 50;
+    }
+    this.clear();
+  };
 
-    // Stops or starts timer
-    if ((isWorldRunning && speedChanged) || gameStopped) {
-      clearInterval(this.timerID);
+  //create a play function that will be the game logic .
+  // use two variables the original state of the grid and then the second variable be a clone of the grid.
+  // loop through the entire grid using a double for loop.
+  // compute the number of neighbors a cell has by setting a variable to 0 to keep track of how many neighbors a cell has and what to do with those
+  //results.
+  //Use the array of operations to use as new indexs to write less repetative code
+  // Create two new variables as new index counters that will be used to update the number of neighbors each cell has.
+  //write an if statement to make sure we are not out of bounds when checking the number of neighbor a cell has then updating our count variable
+  // to show how many neighbors a cell has
+  play = () => {
+    let g = this.state.gridFull;
+    let g2 = arrayClone(this.state.gridFull);
+
+    for (let i = 0; i < this.rows; i++) {
+      for (let j = 0; j < this.cols; j++) {
+        let count = 0;
+        operations.forEach(([x, y]) => {
+          const newI = i + x;
+          const newK = j + y;
+          if (newI >= 0 && newI < this.rows && newK >= 0 && newK < this.cols) {
+            count += g[newI][newK];
+          }
+        }); //create a condition to check if cells are alive then change the next state of the grid depending on how many neighbors
+        //the cell has
+        if (g[i][j] && (count < 2 || count > 3)) g2[i][j] = false;
+        if (!g[i][j] && count === 3) g2[i][j] = true;
+      }
     }
 
-    // The timer schedules a call to the handleStep method at the specified speed intervals
-    if ((isWorldRunning && speedChanged) || gameStarted) {
-      this.timerID = setInterval(() => {
-        this.handleStep();
-      }, speed);
-    }
+    this.setState({
+      gridFull: g2,
+      generation: this.state.generation + 1,
+    });
+  };
+
+  componentDidMount() {
+    this.seed();
+    this.playButton();
   }
 
   render() {
-    const { worldStatus, isWorldRunning, speed, generation } = this.state;
-
     return (
-      <div className='App'>
-        <h1>Game of Life</h1>        
-        <div>
-          <span className='speedometer'>
-            <h3>Game Speed</h3>
-            {'Max '}
-            <Slider speed={speed} onSpeedChange={this.handleSpeedChange} />
-            {'Min '}
-          </span>
-        </div>
-        <div className='container'>
-          <div>
+      <div>
+        <h1>The Game of Life </h1>
+        <Grid
+          gridFull={this.state.gridFull}
+          rows={this.rows}
+          cols={this.cols}
+          selectBox={this.selectBox}
+        />
+        <h2>Generations: {this.state.generation}</h2>
+        <Buttons
+          playButton={this.playButton}
+          pauseButton={this.pauseButton}
+          slow={this.slow}
+          fast={this.fast}
+          medium={this.medium}
+          clear={this.clear}
+          seed={this.seed}
+          gridSize={this.gridSize}
+        />
+        <div className='info-container'>
+          <details className='info-details'>
+            <summary>Rules of Game</summary>
             <div>
-              <button type='button' onClick={this.handleStart}>
-                Start
-              </button>
-              <button type='button' onClick={this.handleStop}>
-                Stop
-              </button>
-              <button
-                type='button'
-                disabled={isWorldRunning}
-                onClick={this.handleStep}
-              >
-                Next
-              </button>
-              <button type='button' onClick={this.handleClearWorld}>
-                Clear
-              </button>
-              <button type='button' onClick={this.handleNewWorld}>
-                Reset
-              </button>
+              <p>
+                <p>This is a no player game (NPC). The rules are as follows:</p>
+                <p>
+                  <li>
+                    Any live cell with two or three live neighbors survives.
+                  </li>
+                  <li>
+                    Any dead cell with three live neighbors becomes a live cell.
+                  </li>
+                  <li>
+                    All other live cells die in the next generation. Similarly,
+                    all other dead cells stay dead..
+                  </li>
+                </p>
+                <a
+                  href='https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life'
+                  target='_blank'
+                >
+                  Conway's Game of Life (Wikipedia)
+                </a>
+              </p>
             </div>
-            <div className='World'>
-              <h3>{`Generation: ${generation}`}</h3>
-              <WorldGrid 
-              worldStatus={worldStatus}
-              onToggleCell={this.handleToggleCell} 
-              />
-            </div>
-          </div>
+          </details>
+        </div>
+        <div className='info-container'>
+          <details>
+            <summary>About the Game</summary>
+            <p>
+              <li className="li-info">
+                "The game is a zero-player game, meaning that its evolution is
+                determined by its initial state, requiring no further input. One
+                interacts with the Game of Life by creating an initial
+                configuration and observing how it evolves. It is Turing
+                complete and can simulate a universal constructor or any other
+                Turing machine. Simply click on the grid to set initial state
+                and click play!"
+              </li>
+            </p>
+          </details>
         </div>
       </div>
     );
   }
+}
+
+//creating a clone of the arrays inside of the arrays , Deep clone
+function arrayClone(arr) {
+  return JSON.parse(JSON.stringify(arr));
 }
 
 export default App;
