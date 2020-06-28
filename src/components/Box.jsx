@@ -1,11 +1,12 @@
 import React from "react";
 
 class Box extends React.Component {
-  //we are using selectBox from our state only now we are entering the current row / current col
+  //SelectBox is our state only when entering the current row / current col
   //because there is nothing to pass in to this.props if its
-  //inside the render method                             / |
+  //inside the render method
   selectBox = () => {
     // |
+    console.log('Box', this.props)
     this.props.selectBox(this.props.row, this.props.col); //<-|
   };
 
