@@ -8,7 +8,7 @@ An interactive tool that simulates a cellular automaton: a set of cells that evo
 
 - HTML
 - CSS
-- JavaScript
+- ReactJS
 
 ## Getting Started
 
