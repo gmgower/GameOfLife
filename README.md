@@ -4,11 +4,23 @@
 
 An interactive tool that simulates a cellular automaton: a set of cells that evolve over time based on a set of rules.
 
+## Rules of the Game
+
+The universe of the Game of Life is an infinite, two-dimensional orthogonal grid of square cells, each of which is in one of two possible states, live or dead, (or populated and unpopulated, respectively). Every cell interacts with its eight neighbours, which are the cells that are horizontally, vertically, or diagonally adjacent.
+
+- Any live cell with two or three live neighbours survives.
+- Any dead cell with three live neighbours becomes a live cell.
+- All other live cells die in the next generation. Similarly, all other dead cells stay dead.
+
 ## Tech
 
 - HTML
 - CSS
 - ReactJS
+
+## Deployed App
+
+[Click to go to live game](https://romantic-neumann-9c3145.netlify.app)
 
 ## Getting Started
 
