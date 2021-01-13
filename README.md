@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An interactive tool that simulates a cellular automaton: a set of cells that evolve over time based on a set of rules.
+It is a zero-player game, meaning that its evolution is determined by its initial state, requiring no further input.
 
 ## Rules of the Game
 
